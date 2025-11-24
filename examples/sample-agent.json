@@ -1,0 +1,47 @@
+{
+    "agentCard": {
+        "name": "translation-agent",
+        "description": "A multilingual translation agent supporting 100+ languages",
+        "endpoint": "https://translation-agent.example.com",
+        "protocolVersion": "0.3",
+        "capabilities": {
+            "streaming": true,
+            "pushNotifications": false
+        },
+        "skills": [
+            {
+                "name": "translate",
+                "description": "Translate text between languages",
+                "parameters": {
+                    "source_language": "string",
+                    "target_language": "string",
+                    "text": "string"
+                }
+            },
+            {
+                "name": "detect_language",
+                "description": "Automatically detect the language of text"
+            }
+        ],
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "security": [
+            {
+                "bearerAuth": []
+            }
+        ]
+    },
+    "tags": [
+        "translation",
+        "nlp",
+        "language"
+    ],
+    "metadata": {
+        "region": "us-east-1",
+        "version": "1.0.0"
+    }
+}

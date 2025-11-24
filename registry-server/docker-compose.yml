@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: a2a-registry-db
+    environment:
+      POSTGRES_DB: a2a_registry
+      POSTGRES_USER: registry_user
+      POSTGRES_PASSWORD: registry_pass_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U registry_user -d a2a_registry"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: a2a-registry-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  registry-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: a2a-registry-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: a2a_registry
+      DB_USER: registry_user
+      DB_PASSWORD: registry_pass_dev
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: dev_secret_change_in_production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  redis_data:
