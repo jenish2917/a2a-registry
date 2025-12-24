@@ -18,13 +18,14 @@ This implementation addresses the community's most-requested feature ([Discussio
 
 ## Features
 
-✅ **RESTful API** - Complete CRUD operations for agent registration  
-✅ **Advanced Search** - Filter by tags, skills, verification status  
-✅ **High Performance** - PostgreSQL + Redis caching, sub-100ms queries  
-✅ **Production-Ready** - Docker deployment, comprehensive logging, error handling  
-✅ **Type-Safe** - Full TypeScript implementation  
-✅ **Client SDK** - TypeScript/JavaScript library for easy integration  
-✅ **Well-Documented** - Complete API docs, examples, guides  
+✅ **RESTful API** - Complete CRUD operations for agent registration
+✅ **Advanced Search** - Filter by tags, skills, verification status
+✅ **🔍 Semantic Search** - Natural language agent discovery using NLP embeddings
+✅ **High Performance** - PostgreSQL + Redis caching + pgvector, sub-100ms queries
+✅ **Production-Ready** - Docker deployment, comprehensive logging, error handling
+✅ **Type-Safe** - Full TypeScript implementation
+✅ **Client SDK** - TypeScript/JavaScript library for easy integration
+✅ **Well-Documented** - Complete API docs, examples, guides
 
 ## Quick Start
 
@@ -72,17 +73,18 @@ const translators = await client.searchBySkill('translate');
 └────────┬────────┘
          │ HTTP/REST
          ▼
-┌─────────────────┐      ┌──────────┐
-│ Registry Server │◄────►│  Redis   │
-│   (Express.js)  │      │  Cache   │
-└────────┬────────┘      └──────────┘
-         │
-         ▼
-┌─────────────────┐
-│   PostgreSQL    │
-│   (JSONB)       │
-└─────────────────┘
+┌─────────────────┐      ┌──────────┐     ┌─────────────────┐
+│ Registry Server │◄────►│  Redis   │     │ Semantic Search │
+│   (Express.js)  │      │  Cache   │     │   (FastAPI)     │
+└────────┬────────┘      └──────────┘     └────────┬────────┘
+         │                                          │
+         │                                          │
+         ▼                                          ▼
+┌─────────────────────────────────────────────────────────┐
+│               PostgreSQL (JSONB + pgvector)             │
+└─────────────────────────────────────────────────────────┘
 ```
+
 
 ### Technology Stack
 
@@ -96,7 +98,7 @@ const translators = await client.searchBySkill('translate');
 
 ```
 a2a-registry/
-├── registry-server/          # Core registry service
+├── registry-server/          # Core registry service (TypeScript/Express)
 │   ├── src/
 │   │   ├── controllers/      # Business logic
 │   │   ├── routes/           # API routes
@@ -105,20 +107,28 @@ a2a-registry/
 │   │   └── utils/            # Helpers
 │   ├── schema.sql            # Database schema
 │   ├── Dockerfile
-│   ├── docker-compose.yml
 │   └── README.md
+├── semantic-search/          # Semantic search microservice (Python/FastAPI)
+│   ├── main.py               # FastAPI application
+│   ├── embeddings.py         # Sentence-transformer embeddings
+│   ├── database.py           # pgvector integration
+│   ├── models.py             # Pydantic models
+│   ├── config.py             # Configuration
+│   └── Dockerfile
+├── registry-python-client/   # Python client SDK
+│   ├── src/a2a_registry/
+│   │   ├── client.py         # RegistryClient class
+│   │   ├── models.py         # Data models
+│   │   └── exceptions.py     # Custom exceptions
+│   ├── tests/                # Unit tests
+│   └── pyproject.toml        # Package config
 ├── registry-client/          # TypeScript/JS client
 │   ├── src/
 │   │   ├── index.ts          # RegistryClient
 │   │   └── types.ts          # Type definitions
 │   └── README.md
-├── examples/                 # Usage examples
-│   ├── sample-agent.json
-│   └── demo.sh
+├── docker-compose.yml        # Unified deployment
 └── docs/                     # Documentation
-    ├── api-reference.md
-    ├── deployment.md
-    └── architecture.md
 ```
 
 ## API Endpoints
